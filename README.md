@@ -7,7 +7,7 @@ For usage with [Maelstrom](https://github.com/jepsen-io/maelstrom).
 Here is a simple example with the [Echo challenge](https://fly.io/dist-sys/1/).
 First create an elixir script called `echo.exs` with content:
 ```elixir
-Mix.install([{:maelstrom, path: "https://github.com/zteln/maelstrom"}])
+Mix.install([{:maelstrom, github: "zteln/maelstrom"}])
 
 defmodule Echo do
   use Maelstrom
