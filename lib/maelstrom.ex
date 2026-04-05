@@ -12,7 +12,7 @@ defmodule Maelstrom do
 
   @callback apply_msg(msg :: map(), opts :: keyword()) :: map()
 
-  defmacro __using__(_opts) do
+  defmacro __using__(opts) do
     quote do
       @behaviour unquote(__MODULE__)
 
@@ -25,15 +25,22 @@ defmodule Maelstrom do
           |> Stream.transform(
             %Maelstrom{m_f: m_f, owner: owner},
             fn input, state ->
-              state =
-                state
-                |> Maelstrom.process_input(input)
-
+              debug_msg(input)
+              state = Maelstrom.process_input(state, input)
               {[], state}
             end
           )
           |> Stream.run()
         end)
+      end
+
+      if unquote(opts[:debug]) do
+        defp debug_msg(input) do
+          unquote(opts[:debug_file] || Path.join(File.cwd!(), "maelstrom.log"))
+          |> File.write!(input, [:append])
+        end
+      else
+        defp debug_msg(input), do: :ok
       end
     end
   end
@@ -67,7 +74,7 @@ defmodule Maelstrom do
   # let client handle all other messages
   defp process_msg(state, msg) do
     %{m_f: {mod, fun}} = state
-    opts = [owner: state.owner]
+    opts = [owner: state.owner, node_id: state.node_id, node_ids: state.node_ids]
     args = [msg, opts]
 
     reply =
