@@ -60,6 +60,7 @@ defmodule Maelstrom do
     end
   end
 
+  @doc "Starts an Agent process that starts that stdio streamer."
   def start_link(mod) do
     Agent.start_link(fn ->
       me = self()
@@ -126,7 +127,7 @@ defmodule Maelstrom do
   def debug(term) do
     term
     |> encode()
-    |> IO.warn()
+    |> write_to_stderr()
 
     term
   end
@@ -164,4 +165,5 @@ defmodule Maelstrom do
   defp encode(term), do: JSON.encode!(term)
 
   defp write_to_stdout(term), do: IO.puts(term)
+  defp write_to_stderr(term), do: IO.warn(term)
 end
